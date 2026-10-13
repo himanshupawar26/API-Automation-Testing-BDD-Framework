@@ -2,6 +2,9 @@
 
 A Cucumber BDD + REST Assured API test automation framework in Java, targeting the public [ReqRes](https://reqres.in) REST API. Built as an SDET/automation portfolio project.
 
+**[Live Allure report](https://himanshupawar26.github.io/API-Automation-Testing-BDD-Framework/)** — published automatically from the latest `main` build.
+[![API Test Automation CI](https://github.com/himanshupawar26/API-Automation-Testing-BDD-Framework/actions/workflows/ci.yml/badge.svg)](https://github.com/himanshupawar26/API-Automation-Testing-BDD-Framework/actions/workflows/ci.yml)
+
 > This repo previously held a 2022 course-exercise version of this framework (Java 7, a single feature file, a hardcoded Windows filesystem path, build artifacts committed to git). It has been fully rewritten; history is preserved in `git log`.
 
 ## What this demonstrates
