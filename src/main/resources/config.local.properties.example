@@ -1,0 +1,8 @@
+# Copy this file to config.local.properties (git-ignored) and fill in your
+# own ReqRes API key to avoid the 40 requests/day anonymous rate limit.
+#
+#   cp src/main/resources/config.local.properties.example src/main/resources/config.local.properties
+#
+# Get a free key at https://reqres.in (sign up, no cost).
+
+api.key=your-reqres-api-key-here

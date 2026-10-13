@@ -1,0 +1,26 @@
+# Maven
+target/
+
+# IDE
+.classpath
+.project
+.settings/
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+logging.txt
+
+# Allure results/report/CLI binary (generated, not source)
+allure-results/
+allure-report/
+.allure/
+
+# Local secrets override — never commit a real API key
+src/main/resources/config.local.properties
+

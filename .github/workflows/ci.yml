@@ -1,0 +1,83 @@
+name: API Test Automation CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # Nightly regression run at 02:00 UTC, catches drift in the live ReqRes API
+    # independent of any code change in this repo.
+    - cron: "0 2 * * *"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      # ReqRes free-tier API key, avoids the 40 requests/day anonymous rate
+      # limit (CI runs would otherwise share that cap across all workflow
+      # runs from this repo's IP range). Set via: gh secret set RQRES_API_KEY
+      RQRES_API_KEY: ${{ secrets.RQRES_API_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Run smoke suite
+        run: mvn -B test -Dcucumber.filter.tags="@smoke"
+
+      - name: Run full regression suite
+        if: github.event_name != 'pull_request'
+        run: mvn -B test -Dcucumber.filter.tags="@regression"
+
+      - name: Generate Allure report
+        if: always()
+        run: mvn -B io.qameta.allure:allure-maven:report
+
+      - name: Upload Allure report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: target/site/allure-maven-plugin
+          retention-days: 30
+
+      - name: Upload Cucumber HTML report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-report
+          path: target/cucumber-report
+          retention-days: 30
+
+  publish-report:
+    needs: test
+    if: github.ref == 'refs/heads/main' && always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Allure report
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-report
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
